@@ -1,3 +1,44 @@
-*{
+* {
     margin: 10px;
+}
+.my_container{
+    border: 2px solid black;
+}
+
+.my_panel{
+    width: 75%;
+    margin: auto;
+    height: auto;
+    border: 1px solid black;
+}
+
+.input_form{
+    border: 1px solid blue;
+    width: 700;
+    height: 600;
+    margin: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 20px;
+    text-align: justify;
+}
+
+.center{
+    text-align: center;
+    margin: auto;
+    color: rgb(5,5,110);
+
+}
+
+.outer_box{
+    border:1px solid blue;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 30px;
+    margin-right: 30px;
+    margin: auto;
+    padding: 10px;
+    border-radius: 10px;
 }

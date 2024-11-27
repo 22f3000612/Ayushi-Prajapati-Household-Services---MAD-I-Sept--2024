@@ -10,22 +10,25 @@
             <div class = "center"> <h1>CareConnect-Connect with service professionals</h1></div>
             <div class="my_panel">
                 <div class = "center"><h3>Login here</h3></div>
+                <form action="/login" method="POST">
                 <div class="input_form">
                     <div class="mb-3">
-                        <label for="User_id" class="form-label">Email address</label>
-                        <input type="email" class="form-control" id="User_id" placeholder="name@example.com">
+                        <label for="User_name" class="form-label">Email address</label>
+                        <input type="email" class="form-control" name = "User_name"id="User_name" placeholder="name@example.com">
                     </div>
                 
                     <div class="mb-3">
                         <label for="Password" class="form-label">Password</label>
-                        <input type="Password" class="form-control" id="Password" placeholder="Password">
+                        <input type="Password" class="form-control" name = "Password" id="Password" placeholder="Password">
                     </div>
 
                     <div class="mb-3">
-                        <button type="button" class="btn btn-primary">Login</button>
-                        New User?<a href="#">Signup as Customer</a>
+                        <button type="submit" class="btn btn-primary">Login</button>
+                        New User?<a href="/register as customer">Signup as Customer</a><a href="/register as professional">Signup as Service Provider</a>
+                        <div class="err_msg">{{msg}}</div>
                     </div>
                 </div>
+                </form>
             </div>
         </div>
     </body>

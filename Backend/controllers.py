@@ -154,8 +154,8 @@ def admin_dashboard():
     services=get_services()
     customers=get_customer()
     professionals=get_professional()
-    servicereqs = Servicereq.query.all()
-    return render_template("admindashboard.html",name=session.get('username'),services=services,customers=customers,professionals=professionals,servicereqs=servicereqs)
+    servicerequets=Servicereq.query.all()
+    return render_template("admindashboard.html",name=session.get('username'),services=services,customers=customers,professionals=professionals,servicerequets=servicerequets)
 
 @app.route("/customer")
 def customer_dashboard():

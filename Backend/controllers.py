@@ -421,7 +421,7 @@ def allservicereqp():
 
 
 
-@app.route("/accepting/<int:subservice_id>/<int:subservice1_id>",methods=["GET"])
+@app.route("/accepting/<int:subservice_id>",methods=["GET"])
 def accepting(subservice_id):   
     #servicereq_app=Servicereq(Service_id=subservice_id,Customer_id=subservice1_id,Professional_id=session.get('userid'),status="Accepted")
     servicereq_app=Servicereq.query.get(subservice_id)

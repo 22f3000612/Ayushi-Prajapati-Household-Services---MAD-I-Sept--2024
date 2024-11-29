@@ -56,13 +56,14 @@
                                 </div>
                             </div>
                         </div> 
-                        {% for service in services%}                   
+                                          
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                         <a href="/service/{{name}}"type="button" class="btn btn-outline-dark btn-small">Add services</a>
+                        {% for service in services%} 
                         <a href="{{ url_for('subservices', subservice_id=service.id) }}" type="button" class="btn btn-outline-dark btn-small">Add Subservice</a>
-
+                        {%endfor%}
                         </div>
-                        {%endfor%}                        
+                                                
                     </div>
                     </div>
 
@@ -215,10 +216,10 @@
                                                     {%for servicerequet in servicerequets%}
                                                 <tr>
                                                     <td>{{ servicerequet.id }}</td>
-                                                    <td>{{ servicerequet.professional_name}}</td>
+                                                    <td>{{ servicereq.professional.fullname}}</td>
                                                     <td>{{ servicerequet.status}}</td>
-                                                    <td>{{ servicerequet.customer_name}}</td>
-                                                    <td>{{ servicerequet.service_name}}</td>
+                                                    <td>{{ servicereq.customer.fullname}}</td>
+                                                    <td>{{ servicerequet.service.name}}</td>
                                                     <td>{{ servicerequet.remarks}}</td>
                                                     <td>{{ servicerequet.rating}}</td>
                                                 </tr>

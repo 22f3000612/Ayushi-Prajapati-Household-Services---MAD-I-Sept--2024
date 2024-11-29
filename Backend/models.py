@@ -40,7 +40,7 @@ class Professional(db.Model):
     service_name=db.Column(db.String,nullable=False)
     status=db.Column(db.String,default="Active")
     p_req=db.Column(db.String,default="Pending")
-    
+
     
     
 #Entity 4
@@ -61,12 +61,12 @@ class Servicereq(db.Model):
     Professional_id=db.Column(db.Integer, db.ForeignKey("Professional.id"),nullable=True)
     Service_id=db.Column(db.Integer, db.ForeignKey("Service.id"),nullable=False)
     Customer_id=db.Column(db.Integer, db.ForeignKey("Customer.id"),nullable=False)
-    date_of_request=db.Column(db.Date,nullable=True)
     status=db.Column(db.String,nullable=True)
-    date_of_completion=db.Column(db.Date,nullable=True)
     remarks=db.Column(db.String,nullable=True)
     rating=db.Column(db.Integer,default=0)
-    service=db.relationship("Service",cascade="all,delete",backref="Servicereq",lazy=True)
+    service=db.relationship("Service",cascade="all,delete",backref="Servicereqs",lazy=True)
+    customer=db.relationship("Customer",cascade="all,delete",backref="Servicereqs",lazy=True)
+    professional=db.relationship("Professional",cascade="all,delete",backref="Servicereqs",lazy=True)
     
 #Entity 6
 class subservice(db.Model):

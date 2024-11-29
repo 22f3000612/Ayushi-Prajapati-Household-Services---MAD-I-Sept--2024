@@ -3,6 +3,11 @@ from flask import Flask,render_template,request,redirect,url_for,session
 from flask import current_app as app
 from .models import *
 import os
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+#engine = create_engine('sqlite:///yourdatabase.db', connect_args={'check_same_thread': False})
+#Session1 = sessionmaker(bind=engine)
+#sessions = Session1()
 
 
 @app.route("/")
@@ -15,8 +20,7 @@ def isUserLoggedIn():
             return redirect(url_for('admin_dashboard'))
         elif session.get('usertype') == 'customer':
             return redirect(url_for('customer_dashboard'))
-        else:
-            session.get('usertype') == 'professional'
+        elif session.get('usertype') == 'professional':
             return redirect(url_for('professional_dashboard'))
     return None
 
@@ -52,9 +56,11 @@ def signin():
         if usr1 and usr1.status=='Blocked':
             return render_template("login.html",msg='Your account has been blocked')
         usr2=Professional.query.filter_by(email=uname,password=pwd).first()
-        session['userid'] = usr2.id
-        session['username'] = usr2.email
-        session['usertype'] = 'professional'
+        if usr2:
+            session['userid'] = usr2.id
+            session['username'] = usr2.email
+            session['usertype'] = 'professional'
+            return redirect(url_for("professional_dashboard",name=uname))
         if usr2 and usr2.status=='Blocked':
             return render_template("login.html",msg='Your account has been Blocked')
         if usr2 and usr2.p_req=="Approved":
@@ -134,6 +140,11 @@ def get_professional():
     professionals=Professional.query.all()
     return professionals
 
+def get_servicereq():
+    servicereqs=Servicereq.query.all()
+    print(servicereqs)
+    return servicereqs
+
 @app.route("/admin")
 def admin_dashboard():
     redirect_response = isUserLoggedIn()
@@ -158,8 +169,10 @@ def professional_dashboard():
     redirect_response = isUserLoggedIn()
     if redirect_response is None:
         return redirect('/login')
-    
-    return render_template("Professionaldashboard.html",name=session.get('username'))
+    servicereqs=get_servicereq()
+    services=get_services()
+    customers=get_customer()
+    return render_template("Professionaldashboard.html",name=session.get('username'),servicereqs=servicereqs,services=services,customers=customers)
 
 
 @app.route("/customer/<name>",methods=["POST","GET"])
@@ -272,34 +285,75 @@ def active_customer(id):
         return redirect(url_for("admin_dashboard",name="Admin"))
     
 
-@app.route("/search/<name>",methods=["GET","POST"])
-def search(name):
+@app.route("/search",methods=["GET","POST"])
+def search():
     if request.method=="POST":
-        print(request.form)
         search_txt=request.form.get("search_txt")
-        print(search_txt)
         by_professionalname=search_by_professionalname(search_txt)
-        print(by_professionalname)
-        by_customername=search_by_customername(search_txt)
+        by_professionalpincode=search_by_professionalpincode(search_txt)        
         by_professionaladdress=search_by_professionaladdress(search_txt)
-        print(by_professionaladdress)
-        by_professionalpincode=search_by_professionalpincode(search_txt)
-        print(by_professionalpincode)
-        if by_customername:
-            return render_template("admindashboard.html",customers=by_customername)
         if by_professionalname:
             return render_template("admindashboard.html",professionals=by_professionalname)
         if by_professionaladdress:
             return render_template("admindashboard.html",professionals=by_professionaladdress)
         if by_professionalpincode:
-            return render_template("admindashboard.html",professionals=by_professionalpincode)
-               
+            return render_template("admindashboard.html",professionals=by_professionalpincode)               
     return render_template("admindashboard.html")
+
+@app.route("/searchc",methods=["GET","POST"])
+def searchc():
+    if request.method=="POST":
+        search_txt=request.form.get("search_txt")
+        by_customername=search_by_customername(search_txt)
+        by_customeraddress=search_by_customeraddress(search_txt)
+        by_customerpincode=search_by_customerpincode(search_txt)        
+        if by_customername:
+            return render_template("admindashboard.html",customers=by_customername)
+        if by_customeraddress:
+            return render_template("admindashboard.html",customers=by_customeraddress)
+        if by_customerpincode:
+            return render_template("admindashboard.html",customers=by_customerpincode)
+    return render_template("admindashboard.html")
+
+@app.route("/searchs",methods=["GET","POST"])
+def searchs():
+    if request.method=="POST":
+        search_txt=request.form.get("search_txt")
+        by_servicename=search_by_servicename(search_txt)
+        by_servicelocation=search_by_servicelocation(search_txt)
+        by_servicepincode=search_by_servicepincode(search_txt)        
+        if by_servicename:
+            return render_template("admindashboard.html",services=by_servicename)
+        if by_servicelocation:
+            return render_template("admindashboard.html",services=by_servicelocation)
+        if by_servicepincode:
+            return render_template("admindashboard.html",services=by_servicepincode)
+    return render_template("admindashboard.html")
+        
+
+def search_by_servicename(search_txt):
+    services = Service.query.filter(Service.name.like(f"%{search_txt}%")).all()
+    return services
+
+def search_by_servicelocation(search_txt):
+    services = Service.query.filter(Service.location.like(f"%{search_txt}%")).all()
+    return services
+
+def search_by_servicepincode(search_txt):
+    services = Service.query.filter(Service.pincode.like(f"%{search_txt}%")).all()
+    return services
 
 def search_by_customername(search_txt):
     customers = Customer.query.filter(Customer.fullname.like(f"%{search_txt}%")).all()
     return customers
 
+def search_by_customeraddress(search_txt):
+    customers = Customer.query.filter(Customer.address.like(f"%{search_txt}%")).all()
+    return customers
+
+def search_by_customerpincode(search_txt):
+    customers = Customer.query.filter(Customer.pincode.like(f"%{search_txt}%")).all()
+    return customers
 
 def search_by_professionalname(search_txt):
     professionals=Professional.query.filter(Professional.fullname.ilike(f"%{search_txt}%")).all()
@@ -339,33 +393,135 @@ def subservices(subservice_id):
 
 
 @app.route("/booking/<int:subservice_id>",methods=["GET"])
-def bookin(subservice_id):
-    print(subservice_id)
-    #status='Reqested'
-    #date=GETCURRENTDATE    
-    new_subservice=Servicereq(Service_id=subservice_id,Customer_id=session.get('userid'))
-    db.session.add(new_subservice)
+def booking(subservice_id): 
+    new_servicereq=Servicereq(Service_id=subservice_id,Customer_id=session.get('userid'),status="Requested")
+    db.session.add(new_servicereq)
     db.session.commit()
-
-    return redirect(url_for("customer_dashboard",name="Admin", msg="Subservice Added Successfully"))
-
+    return redirect(url_for("customer_dashboard", msg="Service requested Successfully"))
 
 #Define professional route to get "requested" service
 #app.route("/professional",methods=["GET"])
 #get all services from serviceRe table
+
+@app.route("/professsional_request",methods=["GET"])
+def allservicereqp():
+    servicereqs=get_servicereq()
+    return render_template("Professionaldashboard.html",servicereqs=servicereqs)
 
 #Define new route for accept/reject
 #app.route("/professional/service/id",methods=["GET"])  
 #pass type as query parameter in URL
 #update DB entry ith status
 
+
+@app.route("/accept_servicereq/<id>",methods=["GET"])
+def accept_servicereq(id):
+    servicereq_app=Servicereq.query.get(id)
+    if servicereq_app:
+        servicereq_app.status="Accept"
+        db.session.commit()
+        return redirect(url_for("professional_dashboard"))
+    
+    
+@app.route("/decline_servicereq/<id>",methods=["GET","POST"])
+def decline_servicereq(id):
+    decline_servicereq=Servicereq.query.get(id)
+    if decline_servicereq:
+        decline_servicereq.status="Declined"
+        db.session.commit()
+        return redirect(url_for("professional_dashboard"))
+   
+'''
+@app.route("/accepting/<int:subservice_id>",methods=["GET"])
+def accepting(subservice_id):     
+    servicereq1 = Servicereq.query.filter_by(Customer_id=subservice_id, status="Requested").first()
+    print(f"Subservice ID from route: {subservice_id}"
+    
+    if servicereq1:
+        db.session.commit()
+    return redirect(url_for("professional_dashboard", msg="Service Accepted"))
+'''
+'''
+@app.route("/accepting/<int:subservice_id>", methods=["GET"])
+def accepting(subservice_id):
+    print(f"Request URL: {request.url}")
+    name = request.args.get('name')
+    print(f"Name parameter from URL: {name}")
+
+    # Log all professionals for debugging
+    professionals = Professional.query.all()
+    print(f"All professionals in database: {professionals}")
+
+    # Case-insensitive email lookup
+    professional = None
+    if name:
+        professional = Professional.query.filter(Professional.email.ilike(name)).first()
+        print(f"Professional found: {professional}")
+    else:
+        print("No name parameter provided in the URL.")
+
+    servicereq1 = Servicereq.query.filter_by(Service_id=subservice_id, status="Requested").first()
+    if servicereq1:
+        print(f"Service request found: {servicereq1}")
+        if professional:
+            servicereq1.Professional_id = professional.id
+            servicereq1.status = "Accepted"
+            db.session.commit()
+            print("Service request accepted and updated.")
+        else:
+            print("Professional not found; unable to accept service request.")
+    else:
+        print(f"No service request found with Service_id: {subservice_id} and status='Requested'")
+
+    return redirect(url_for("professional_dashboard", msg="Service Accepted"))
+'''
+
+
+
+
 #Customer servie histrory
 #app.route("/customer/servies",methods=["GET"])
 #pass type as close while clicking on "close it"
 
+
+@app.route("/customer_servicehistory",methods=["GET"])
+def customer_servicehistory():
+    Customer_id=session.get('userid') 
+    servicereqs = Servicereq.query.filter_by(Customer_id=Customer_id).all()
+    print(servicereqs)
+    return render_template("Customerdashboard.html",servicereqs=servicereqs)
+
+@app.route("/closedservices",methods=["GET"])
+def closedservices(): 
+    servicereqs = Servicereq.query.filter_by(status='Closed').all()
+    if servicereqs:
+        db.session.commit()
+    print(servicereqs)
+    return render_template("Professionaldashboard.html",servicereqs=servicereqs)
+
 #Define route to get closed services
 #app.route("/professional/service/closed",methods=["GET"])
 
+@app.route("/feedback",methods=["GET","POST"])
+def feedback():
+    if request.method=="POST":
+        remarks=request.form.get("Remarks")
+        ratings=request.form.get("Ratings")       
+        new_entry=Servicereq(Remarks=remarks,Ratings=ratings)
+        db.session.add(new_entry)
+        db.session.commit()
+        return render_template("Customerdashboard",msg="Thank you for your feedback!")   
+    return render_template("feedbackform.html")
+''''
+@app.route("/delete_servicerequest/<id>", methods=["GET"])
+def delete_servicerequest(id):
+    servicerequest = Servicereq.query.get(id)
+    db.session.delete(servicerequest)
+    db.session.commit()
+    return redirect(url_for("customer_dashboard"))
+'''
 
-
-
+@app.route("/service_request",methods=["GET"])
+def service_request():
+    servicereqs1=Servicereq.query.all()
+    return render_template("admindashboard.html",servicereqs=servicereqs1)

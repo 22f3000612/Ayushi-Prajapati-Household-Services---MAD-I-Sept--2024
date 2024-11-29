@@ -71,15 +71,16 @@
                                                 <tr>
                                                     <td>{{ servicereq.id }}</td>
                                                     <td>{{ servicereq.service.name }}</td>
-                                                    <td>{{ servicereq.service.baseprice }}</td>
+                                                    
                                                     <td>{{servicereq.professional.fullname}}</td>
                                                     <td>{{ servicereq.professional.contact_number}}</td>
                                                     <td>{{ servicereq.status}}</td>
-                                                    <td>{{service.remarks}}</td>
-                                                    <td>{{service.ratings}}</td>
+                                                    <td>{{servicereq.remarks}}</td>
+                                                    <td>{{servicereq.ratings}}</td>
+                                                    <td>{{ servicereq.status}}</td>
                                                     <td>{{ servicereq.action}}</td>                                                    
                                                     <td>
-                                                        {%if servicereq.status == "Closed" %}
+                                                        {%if servicereq.status == "Close" %}
                                                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                                             <a href="/feedback"type="button" class="btn btn-outline-dark btn-small">Close it?</a>
                                                         </div> 

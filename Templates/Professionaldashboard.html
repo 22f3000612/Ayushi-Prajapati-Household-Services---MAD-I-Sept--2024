@@ -77,8 +77,7 @@
                                                             Take Action
                                                         </button>
                                                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                                                <li><a class="dropdown-item" href="{{url_for('accepting', subservice_id=servicereq.id) }}">Accept</a></li>
-                                                                <li><a class="dropdown-item" href="#">Reject</a></li>
+                                                                <li><a class="dropdown-item" href="{{url_for('accepting', subservice_id=servicereq.service.id, subservice1_id=servicereq.customer.id) }}">Accept</a></li>
                                                             </ul>
                                                     </div>
                                                     </td>   
@@ -117,9 +116,9 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {%if servicereqs %}
-                                                    {%for servicereq in servicereqs%}
-                                                        {% if servicereq.status == "Closed" %}
+                                                {%if servicereqs1 %}
+                                                    {%for servicereq in servicereqs1%}
+                                                        {% if servicereq.status == "Close" %}
                                                 <tr>
                                                     <td>{{ servicereq.id }}</td>
                                                     <td>{{ servicereq.service.fullname }}</td>

@@ -61,7 +61,7 @@ class Servicereq(db.Model):
     Professional_id=db.Column(db.Integer, db.ForeignKey("Professional.id"),nullable=True)
     Service_id=db.Column(db.Integer, db.ForeignKey("Service.id"),nullable=False)
     Customer_id=db.Column(db.Integer, db.ForeignKey("Customer.id"),nullable=False)
-    status=db.Column(db.String,nullable=True)
+    status=db.Column(db.String,nullable=False)
     remarks=db.Column(db.String,nullable=True)
     rating=db.Column(db.Integer,default=0)
     service=db.relationship("Service",cascade="all,delete",backref="Servicereqs",lazy=True)

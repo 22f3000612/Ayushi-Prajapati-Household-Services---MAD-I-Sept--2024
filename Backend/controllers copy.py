@@ -241,8 +241,7 @@ def search(name):
         if by_professionaladdress:
             return render_template("admindashboard.html",professionals=by_professionaladdress)
         if by_professionalpincode:
-            return render_template("admindashboard.html",professionals=by_professionalpincode)
-               
+            return render_template("admindashboard.html",professionals=by_professionalpincode)               
     return render_template("admindashboard.html",name=name)
 
 def search_by_professionalname(search_txt):
@@ -284,12 +283,10 @@ def subservices(subservice_id):
 
 @app.route("/booking/<int:subservice_id>",methods=["GET"])
 def bookin(subservice_id):
-    print(subservice_id)
-    
-    new_subservice=Servicereq(Service_id=subservice_id,baseprice=ssprice)
+    print(subservice_id)    
+    new_subservice=Servicereq(Service_id=subservice_id)
     db.session.add(new_subservice)
     db.session.commit()
-
     return redirect(url_for("admin_dashboard",name="Admin", msg="Subservice Added Successfully"))
 
 

@@ -55,6 +55,7 @@ def signin():
             return redirect(url_for("customer_dashboard",name=uname))
         if usr1 and usr1.status=='Blocked':
             return render_template("login.html",msg='Your account has been blocked')
+        
         usr2=Professional.query.filter_by(email=uname,password=pwd).first()
         if usr2:
             session['userid'] = usr2.id
@@ -162,7 +163,10 @@ def customer_dashboard():
     if redirect_response is None:
         return redirect('/login')
     services=get_services()
-    return render_template("Customerdashboard.html",name=session.get('username'),services=services)
+    servicereqs=get_servicereq()
+    Customer_id=session.get('userid')
+    servicereqs = Servicereq.query.filter_by(Customer_id=Customer_id).all()
+    return render_template("Customerdashboard.html",name=session.get('username'),services=services,servicereqs=servicereqs)
 
 @app.route("/professional")
 def professional_dashboard():
@@ -172,7 +176,8 @@ def professional_dashboard():
     servicereqs=get_servicereq()
     services=get_services()
     customers=get_customer()
-    return render_template("Professionaldashboard.html",name=session.get('username'),servicereqs=servicereqs,services=services,customers=customers)
+    servicereqs1 = Servicereq.query.filter_by(status='Close').all()
+    return render_template("Professionaldashboard.html",name=session.get('username'),servicereqs=servicereqs,services=services,customers=customers,servicereqs1=servicereqs1)
 
 
 @app.route("/customer/<name>",methods=["POST","GET"])
@@ -395,6 +400,7 @@ def subservices(subservice_id):
 @app.route("/booking/<int:subservice_id>",methods=["GET"])
 def booking(subservice_id): 
     new_servicereq=Servicereq(Service_id=subservice_id,Customer_id=session.get('userid'),status="Requested")
+    print(new_servicereq)
     db.session.add(new_servicereq)
     db.session.commit()
     return redirect(url_for("customer_dashboard", msg="Service requested Successfully"))
@@ -414,82 +420,22 @@ def allservicereqp():
 #update DB entry ith status
 
 
-@app.route("/accept_servicereq/<id>",methods=["GET"])
-def accept_servicereq(id):
-    servicereq_app=Servicereq.query.get(id)
-    if servicereq_app:
-        servicereq_app.status="Accept"
-        db.session.commit()
-        return redirect(url_for("professional_dashboard"))
-    
-    
-@app.route("/decline_servicereq/<id>",methods=["GET","POST"])
-def decline_servicereq(id):
-    decline_servicereq=Servicereq.query.get(id)
-    if decline_servicereq:
-        decline_servicereq.status="Declined"
-        db.session.commit()
-        return redirect(url_for("professional_dashboard"))
-   
-'''
-@app.route("/accepting/<int:subservice_id>",methods=["GET"])
-def accepting(subservice_id):     
-    servicereq1 = Servicereq.query.filter_by(Customer_id=subservice_id, status="Requested").first()
-    print(f"Subservice ID from route: {subservice_id}"
-    
-    if servicereq1:
-        db.session.commit()
+
+@app.route("/accepting/<int:subservice_id>/<int:subservice1_id>",methods=["GET"])
+def accepting(subservice_id):   
+    #servicereq_app=Servicereq(Service_id=subservice_id,Customer_id=subservice1_id,Professional_id=session.get('userid'),status="Accepted")
+    servicereq_app=Servicereq.query.get(subservice_id)
+    servicereq_app.status="Accept"
+    servicereq_app.Professional_id=session.get('userid')
+    #servicereq_app.add(servicereq_app)
+    db.session.commit()
     return redirect(url_for("professional_dashboard", msg="Service Accepted"))
 '''
-'''
-@app.route("/accepting/<int:subservice_id>", methods=["GET"])
-def accepting(subservice_id):
-    print(f"Request URL: {request.url}")
-    name = request.args.get('name')
-    print(f"Name parameter from URL: {name}")
-
-    # Log all professionals for debugging
-    professionals = Professional.query.all()
-    print(f"All professionals in database: {professionals}")
-
-    # Case-insensitive email lookup
-    professional = None
-    if name:
-        professional = Professional.query.filter(Professional.email.ilike(name)).first()
-        print(f"Professional found: {professional}")
-    else:
-        print("No name parameter provided in the URL.")
-
-    servicereq1 = Servicereq.query.filter_by(Service_id=subservice_id, status="Requested").first()
-    if servicereq1:
-        print(f"Service request found: {servicereq1}")
-        if professional:
-            servicereq1.Professional_id = professional.id
-            servicereq1.status = "Accepted"
-            db.session.commit()
-            print("Service request accepted and updated.")
-        else:
-            print("Professional not found; unable to accept service request.")
-    else:
-        print(f"No service request found with Service_id: {subservice_id} and status='Requested'")
-
-    return redirect(url_for("professional_dashboard", msg="Service Accepted"))
-'''
-
-
-
-
-#Customer servie histrory
-#app.route("/customer/servies",methods=["GET"])
-#pass type as close while clicking on "close it"
-
-
 @app.route("/customer_servicehistory",methods=["GET"])
-def customer_servicehistory():
-    Customer_id=session.get('userid') 
-    servicereqs = Servicereq.query.filter_by(Customer_id=Customer_id).all()
-    print(servicereqs)
+def allservicereqp1():
+    servicereqs=get_servicereq()
     return render_template("Customerdashboard.html",servicereqs=servicereqs)
+'''
 
 @app.route("/closedservices",methods=["GET"])
 def closedservices(): 
@@ -499,8 +445,6 @@ def closedservices():
     print(servicereqs)
     return render_template("Professionaldashboard.html",servicereqs=servicereqs)
 
-#Define route to get closed services
-#app.route("/professional/service/closed",methods=["GET"])
 
 @app.route("/feedback",methods=["GET","POST"])
 def feedback():
@@ -512,16 +456,11 @@ def feedback():
         db.session.commit()
         return render_template("Customerdashboard",msg="Thank you for your feedback!")   
     return render_template("feedbackform.html")
-''''
-@app.route("/delete_servicerequest/<id>", methods=["GET"])
-def delete_servicerequest(id):
-    servicerequest = Servicereq.query.get(id)
-    db.session.delete(servicerequest)
-    db.session.commit()
-    return redirect(url_for("customer_dashboard"))
-'''
+
 
 @app.route("/service_request",methods=["GET"])
 def service_request():
     servicereqs1=Servicereq.query.all()
     return render_template("admindashboard.html",servicereqs=servicereqs1)
+
+

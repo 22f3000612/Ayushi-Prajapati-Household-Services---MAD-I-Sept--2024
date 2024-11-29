@@ -1,7 +1,7 @@
-
-
-                    <div class="card">
-                    <div class="card-body">
+{%extends "admin_layout.html"%}
+{%block content%}
+                    <div class="card">                    
+                    <div class="card-body">                        
                         <div class="container px-4">
                             <div class="row gx-5">
                                 <div class="col">
@@ -11,20 +11,64 @@
                                                 <tr>
                                                 <th scope="col">ID</th>
                                                 <th scope="col">Service Name</th>
+                                                <th scope="col">Description</th>
                                                 <th scope="col">Base Price</th>
-                                                <th scope="col">Action</th>
+                                                <th scope="col">Subservice</th>
+                                                <th scope="col">Location</th>
+                                                <th scope="col">Pincode</th>
+                                                <th scope="col">Action</th>                                                
                                                 </tr>
                                             </thead>
+                                            <tbody>
+                                                {%if services%}
+                                                    {%for service in services%}
+                                                <tr>
+                                                    <td>{{ service.id }}</td>
+                                                    <td>{{ service.name }}</td>
+                                                    <td>{{service.description}}</td>
+                                                    <td>{{ service.baseprice }}</td>
+                                                    <td>{{ service.subservice }}</td>
+                                                    <td>{{ service.location }}</td>
+                                                    <td>{{ service.pincode }}</td>
+                                                    <td>{{service.action}}</td>
+                                                    <td>
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-secondary dropdown-toggle" 
+                                                            type="button" 
+                                                            id="dropdownMenuButton1" 
+                                                            data-bs-toggle="dropdown" 
+                                                            aria-expanded="false">
+                                                            Take Action
+                                                        </button>
+                                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                                                <li><a class="dropdown-item" href="{{url_for('delete_service', id=service.id)}}">Delete</a></li>
+                                                                <li><a class="dropdown-item" href="{{ url_for('edit_service', id=service.id) }}">Edit</a></li>
+                                                            </ul>
+                                                        </div>
+                                                    </td>   
+                                                </tr>
+                                                    {%endfor%}    
+                                                {%else%}
+                                                    <h3 class = "center"> No services found</h3>
+                                                {%endif%}
+                                            </tbody>
                                         </table>
                                 </div>
                             </div>
-                        </div>
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <button type="button" class="btn btn-outline-dark btn-small">Add services</button> 
                         </div> 
+                        {% for service in services%}                   
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="/service/{{name}}"type="button" class="btn btn-outline-dark btn-small">Add services</a>
+                        <a href="{{ url_for('subservices', subservice_id=service.id) }}" type="button" class="btn btn-outline-dark btn-small">Add Subservice</a>
+
+                        </div>
+                        {%endfor%}                        
                     </div>
                     </div>
-                
+
+                    
+
+
                     <div class="card">
                     <div class="card-body">
                         <div class="container px-4">
@@ -37,17 +81,116 @@
                                                 <tr>
                                                 <th scope="col">ID</th>
                                                 <th scope="col">Name</th>
-                                                <th scope="col">Years of Experience</th>
+                                                <th scope="col">Contact Number</th>
                                                 <th scope="col">Service Name</th>
+                                                <th scope="col">Years of Experience</th>
+                                                <th scope="col">Professional Summary</th>
                                                 <th scope="col">Action</th>
                                                 </tr>
-                                            </thead>
+                                            </thead> 
+                                            <tbody>
+                                                {%if professionals%}
+                                                    {%for professional in professionals%}
+                                                <tr>
+                                                    <td>{{ professional.id }}</td>
+                                                    <td>{{ professional.fullname }}</td>
+                                                    <td>{{professional.contact_number}}</td>
+                                                    <td>{{ professional.service_name }}</td>
+                                                    <td>{{professional.experience}}</td>
+                                                    <td>{{professional.professional_summary}}</td>
+                                                    <td>{{professional.action}}</td>
+                                                    <td>
+                                                        <div class="dropdown">
+                                                            <button class="btn btn-secondary dropdown-toggle" 
+                                                                    type="button" 
+                                                                    id="dropdownMenuButton1" 
+                                                                    data-bs-toggle="dropdown" 
+                                                                    aria-expanded="false">
+                                                                    Take Action
+                                                            </button>
+                                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                                                    <li><a class="dropdown-item" href="{{url_for('delete_professional', id=professional.id)}}">Delete</a></li>
+                                                                    <li><a class="dropdown-item" href="{{url_for('approve_professional', id=professional.id)}}">Approve</a></li>
+                                                                    <li><a class="dropdown-item" href="{{ url_for('decline_professional', id=professional.id)}}">Decline</a></li>
+                                                                    <li><a class="dropdown-item" href="{{ url_for('blocked_professional', id=professional.id)}}">Block</a></li>
+                                                                    <li><a class="dropdown-item" href="{{ url_for('active_professional', id=professional.id)}}">Unblock</a></li>
+                                                                </ul>
+                                                        </div>
+                                                    </td>                                                   
+                                                </tr>
+                                                    {%endfor%}
+                                                {%else%}
+                                                    <h3 class = "center"> No Professional found</h3>
+                                                {%endif%}
+                                            </tbody>                                                                                            
                                         </table>                                
                                 </div>
                             </div>
                         </div>
                     </div>
                     </div>
+
+
+
+                    <div class="card">
+                    <div class="card-body">
+                        <div class="container px-4">
+                
+                            <div class="row gx-5">
+                                <div class="col">
+                                    <div class="p-3 border bg-light table-responsive">Customer</div>
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                <th scope="col">ID</th>
+                                                <th scope="col">Name</th>
+                                                <th scope="col">Contact</th>
+                                                <th scope="col">Address</th>
+                                                <th scope="col">Pincode</th>
+                                                <th scope="col">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {%if customers%}
+                                                    {%for customer in customers%}
+                                                <tr>
+                                                    <td>{{ customer.id }}</td>
+                                                    <td>{{ customer.fullname }}</td>
+                                                    <td>{{customer.contact_number}}</td>
+                                                    <td>{{ customer.address }}</td>
+                                                    <td>{{customer.pincode}}</td>
+                                                    <td>{{customer.action}}</td>
+                                                    <td>
+                                                        <div class="dropdown">
+                                                            <button class="btn btn-secondary dropdown-toggle" 
+                                                                    type="button" 
+                                                                    id="dropdownMenuButton1" 
+                                                                    data-bs-toggle="dropdown" 
+                                                                    aria-expanded="false">
+                                                                    Take Action
+                                                            </button>
+                                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                                                    <li><a class="dropdown-item" href="{{url_for('delete_customer', id=customer.id)}}">Delete</a></li>
+                                                                    <li><a class="dropdown-item" href="{{ url_for('blocked_customer', id=customer.id)}}">Block</a></li>
+                                                                    <li><a class="dropdown-item" href="{{ url_for('active_customer', id=customer.id)}}">Unblock</a></li>
+                                                                </ul>
+                                                        </div>
+                                                    </td>                                                    
+                                                </tr>
+                                                    {%endfor%}
+                                                {%else%}
+                                                    <h3 class = "center"> No Customer found</h3>
+                                                {%endif%}
+                                            </tbody>                                                                                           
+                                        </table>                                
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+
+
+
 
                     <div class="card">
                     <div class="card-body">
@@ -61,16 +204,34 @@
                                                     <th scope="col">ID</th>
                                                     <th scope="col">Assigned Professional</th>
                                                     <th scope="col">Status</th>
-                                                    <th scope="col">Date of request</th>
-                                                    <th scope="col">Date of completion</th>
-                                                    <th scope="col">Customer ID</th>
+                                                    <th scope="col">Customer Name</th>
+                                                    <th scope="col">Service Name</th>
                                                     <th scope="col">Remarks</th>
+                                                    <th scope="col">Ratings</th>
                                                     </tr>
                                             </thead>
-                                        </table> 
+                                            <tbody>
+                                                {%if servicerequets%}
+                                                    {%for servicerequet in servicerequets%}
+                                                <tr>
+                                                    <td>{{ servicerequet.id }}</td>
+                                                    <td>{{ servicerequet.professional_name}}</td>
+                                                    <td>{{ servicerequet.status}}</td>
+                                                    <td>{{ servicerequet.customer_name}}</td>
+                                                    <td>{{ servicerequet.service_name}}</td>
+                                                    <td>{{ servicerequet.remarks}}</td>
+                                                    <td>{{ servicerequet.rating}}</td>
+                                                </tr>
+                                                    {%endfor%}
+                                                {%else%}
+                                                    <h3 class = "center"> No service Request found</h3>
+                                                {%endif%}
+                                            </tbody>
+                                        </table>
                                 </div>
                             </div>
-                        </div>
+                        </div>                     
                     </div>
                     </div>
-
+{%endblock%}             
+                

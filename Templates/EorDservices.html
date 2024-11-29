@@ -1,0 +1,32 @@
+{%extends "admin_layout.html"%}
+{%block content%}
+                <div class = "center"><h3>Edit Service</h3></div>
+                <form action="#" method="POST">
+                <form action="{{ url_for('delete_service', id=service.id) }}" method="POST">
+                <form action="{{ url_for('edit_service', id=service.id) }}" method="POST">
+                <div class="input_form">
+
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" name="name"id="name" value="{{service.name}}">
+                    </div>
+                
+                    <div class="mb-3">
+                        <label for="baseprice" class="form-label">Baseprice</label>
+                        <input type="numbers" class="form-control" name="baseprice" id="baseprice" value="{{service.baseprice}}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <input type="text" class="form-control"  name="description" id="address" value="{{service.description}}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </div>
+                </form>
+                </form>
+                </form>
+                </div>
+{%endblock%}

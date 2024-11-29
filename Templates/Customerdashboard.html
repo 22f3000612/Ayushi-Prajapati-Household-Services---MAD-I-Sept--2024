@@ -14,7 +14,7 @@
                         <div class="collapse navbar-collapse" id="navbarText">
                             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                                 <li class="nav-item">
-                                    <a class="nav-link active" aria-current="page" href="#">Home</a>
+                                    <a class="nav-link active" aria-current="page" href="/customer">Home</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link active" aria-current="page" href="#">Profile</a>
@@ -26,53 +26,30 @@
                                     <a class="nav-link active" aria-current="page" href="#">Search</a>
                                 </li>                 
                                 <li>
-                                    <a class="nav-link" href="#">Logout</a>
+                                    <a class="nav-link" href="/logout">Logout</a>
                                 </li>
                             </ul>
                             <span class="navbar-text">
-                                Welcome to User
+                                Welcome to {{name}}
                             </span>
                         </div>
                     </div>
                     </nav>
 
                         <div class="row row-cols-1 row-cols-md-3 g-4">
+                            {% for service in services %}
                             <div class="col">
                                 <div class="card h-100">
-                                    <img src="..." class="card-img-top" alt="...">
                                     <div class="card-body">
-                                            <h5 class="card-title">Card title</h5>
-                                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                            <a href="#" class="btn btn-primary">Go somewhere</a>
+                                            <h5 class="card-title">{{service.name}}</h5>
+                                            <p class="card-text">{{service.description}}</p>
+                                            <a href="{{ url_for('Subservice', id=service.id) }}"class="btn btn-primary">View More</a>
                                     </div>
-
+                        
                                 </div>
                             </div>
-                            <div class="col">
-                                <div class="card h-100">
-                                    <img src="..." class="card-img-top" alt="...">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Card title</h5>
-                                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                        <a href="#" class="btn btn-primary">Go somewhere</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="card h-100">
-                                    <img src="..." class="card-img-top" alt="...">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Card title</h5>
-                                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                        <a href="#" class="btn btn-primary">Go somewhere</a>
-                                    </div>
-                                </div>
-                            </div>
+                            {%endfor%}
                         </div>
-                    
-
-
-
 
                     <div class="card">
                     <div class="card-body">
@@ -90,6 +67,7 @@
                                                 <th scope="col">Status</th>
                                                 <th scope="col">Date of Request</th>
                                                 <th scope="col">Date of Completion</th>
+                                                
                                                 </tr>
                                             </thead>
                                         </table>                                
@@ -98,11 +76,9 @@
                         </div>
                     </div>
                     </div>
-                </div>
-       
 
-            </div>
-        </div>
+
+                </div>
         </div>
     </body>
 </html>

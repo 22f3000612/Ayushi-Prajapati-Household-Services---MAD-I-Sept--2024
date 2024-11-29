@@ -1,0 +1,42 @@
+{%extends "admin_layout.html"%}
+{%block content%}
+                <div class = "center"></div>
+                <form action="#" method="POST">
+                <div class="input_form">
+
+                    
+                    <div class="mb-3">
+                        <label for="professional_name" class="form-label">Professional Name</label>
+                        <input type="text" class="form-control"  name="professional_name" id="professional_name" placeholder="professional_name">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Status</label>
+                        <input type="text" class="form-control" name="status" id="status" placeholder="status">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="customer_name" class="form-label">Customer Name</label>
+                        <input type="text" class="form-control" name="experience" id="customer_name" placeholder="customer_name">
+                    </div>
+                
+                    <div class="mb-3">
+                        <label for="service_name" class="form-label">Service Name</label>
+                        <input type="text" class="form-control" name="service_name" id="service_name" placeholder="Cleaning">
+                    </div>                   
+                    
+                    
+                    <div class="mb-3">
+                        <label for = "remarks" class="form-label">Remarks</label>
+                        <input type="text" class="form-control" name="remarks" id="remarks" placeholder="remarks">
+                    </div> 
+                    
+                    <div class="mb-3">
+                        <label for = "rating" class="form-label">Ratings</label>
+                        <input type="number" class="form-control" name="rating" id="rating" placeholder="rating">
+                    </div> 
+
+                </div>
+                </form>
+                </div>
+{%endblock%}

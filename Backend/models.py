@@ -20,6 +20,7 @@ class Customer(db.Model):
     fullname =db.Column(db.String,nullable=False)
     address =db.Column(db.String,nullable=False)
     pincode=db.Column(db.Integer,nullable=False)
+    status=db.Column(db.String,default="Active")
     
     
 
@@ -37,6 +38,8 @@ class Professional(db.Model):
     experience=db.Column(db.String,nullable=False)
     professional_summary=db.Column(db.String,nullable=False)
     service_name=db.Column(db.String,nullable=False)
+    status=db.Column(db.String,default="Active")
+    p_req=db.Column(db.String,default="Pending")
     
     
     
@@ -47,20 +50,33 @@ class Service(db.Model):
     name=db.Column(db.String,nullable=False)
     description=db.Column(db.String,nullable=False)
     baseprice=db.Column(db.Integer,default=0.0)
+    subservice=db.Column(db.String,nullable=False)
+    location=db.Column(db.String,nullable=False)
+    pincode=db.Column(db.String,nullable=False)
 
 #Entity 5
 class Servicereq(db.Model):
     __tablename__="Servicereq"
     id = db.Column(db.Integer, primary_key=True)
-    Professional_id=db.Column(db.Integer, db.ForeignKey("Professional.id"),nullable=False)
+    Professional_id=db.Column(db.Integer, db.ForeignKey("Professional.id"),nullable=True)
     Service_id=db.Column(db.Integer, db.ForeignKey("Service.id"),nullable=False)
     Customer_id=db.Column(db.Integer, db.ForeignKey("Customer.id"),nullable=False)
-    date_of_request=db.Column(db.Date,nullable=False)
-    status=db.Column(db.String,nullable=False)
-    date_of_completion=db.Column(db.Date,nullable=False)
-    remarks=db.Column(db.String,nullable=False)
+    date_of_request=db.Column(db.Date,nullable=True)
+    status=db.Column(db.String,nullable=True)
+    date_of_completion=db.Column(db.Date,nullable=True)
+    remarks=db.Column(db.String,nullable=True)
     rating=db.Column(db.Integer,default=0)
     service=db.relationship("Service",cascade="all,delete",backref="Servicereq",lazy=True)
     
+#Entity 6
+class subservice(db.Model):
+    __tablename__="subservice"
+    id = db.Column(db.Integer, primary_key=True)
+    name=db.Column(db.String,nullable=False)
+    description=db.Column(db.String,nullable=False)
+    baseprice=db.Column(db.Integer,default=0.0)
+    location=db.Column(db.String,nullable=False)
+    pincode=db.Column(db.String,nullable=False)
+    service_id = db.Column(db.Integer, db.ForeignKey('Service.id'), nullable=False)
     
-    
+                    

@@ -4,57 +4,24 @@ from flask import current_app as app
 from .models import *
 import os
 
-
 @app.route("/")
 def home():
     return render_template("index.html")
 
-def isUserLoggedIn():
-    if 'userid' in session:
-        if session.get('usertype') == 'admin':
-            return redirect(url_for('admin_dashboard'))
-        elif session.get('usertype') == 'customer':
-            return redirect(url_for('customer_dashboard'))
-        else:
-            session.get('usertype') == 'professional'
-            return redirect(url_for('professional_dashboard'))
-    return None
-
-@app.route("/logout")
-def logout():
-    session.pop('userid',None)
-    session.pop('username',None)
-    return redirect('/login')
 
 @app.route("/login",methods=["GET","POST"])
 def signin():
-    redirect_response = isUserLoggedIn()
-    if redirect_response:
-        return redirect_response
-    
     if request.method=="POST":
         uname=request.form.get("User_name")
         pwd=request.form.get("Password")
         usr=Admin.query.filter_by(email=uname,password=pwd).first()
         print(usr)
         if usr:
-            session['userid'] = usr.email
-            session['username'] = usr.email
-            session['usertype'] = 'admin'
-            return redirect(url_for("admin_dashboard",name=uname))
-        
+            return redirect(url_for("admin_dashboard",name=uname))        
         usr1=Customer.query.filter_by(email=uname,password=pwd).first()
-        if usr1:
-            session['userid'] = usr1.id
-            session['username'] = usr1.email
-            session['usertype'] = 'customer'
-            return redirect(url_for("customer_dashboard",name=uname))
         if usr1 and usr1.status=='Blocked':
             return render_template("login.html",msg='Your account has been blocked')
         usr2=Professional.query.filter_by(email=uname,password=pwd).first()
-        session['userid'] = usr2.id
-        session['username'] = usr2.email
-        session['usertype'] = 'professional'
         if usr2 and usr2.status=='Blocked':
             return render_template("login.html",msg='Your account has been Blocked')
         if usr2 and usr2.p_req=="Approved":
@@ -134,32 +101,22 @@ def get_professional():
     professionals=Professional.query.all()
     return professionals
 
-@app.route("/admin")
-def admin_dashboard():
-    redirect_response = isUserLoggedIn()
-    if redirect_response is None:
-        return redirect('/logout')
+@app.route("/admin/<name>")
+def admin_dashboard(name):
     services=get_services()
     customers=get_customer()
     professionals=get_professional()
 
-    return render_template("admindashboard.html",name=session.get('username'),services=services,customers=customers,professionals=professionals)
+    return render_template("admindashboard.html",name=name,services=services,customers=customers,professionals=professionals)
 
-@app.route("/customer")
-def customer_dashboard():
-    redirect_response = isUserLoggedIn()
-    if redirect_response is None:
-        return redirect('/login')
+@app.route("/customer/<name>")
+def customer_dashboard(name):
     services=get_services()
-    return render_template("Customerdashboard.html",name=session.get('username'),services=services)
+    return render_template("Customerdashboard.html",name=name,services=services)
 
-@app.route("/professional")
-def professional_dashboard():
-    redirect_response = isUserLoggedIn()
-    if redirect_response is None:
-        return redirect('/login')
-    
-    return render_template("Professionaldashboard.html",name=session.get('username'))
+@app.route("/professional/<name>")
+def professional_dashboard(name):
+    return render_template("Professionaldashboard.html",name=name)
 
 
 @app.route("/customer/<name>",methods=["POST","GET"])
@@ -275,18 +232,10 @@ def active_customer(id):
 @app.route("/search/<name>",methods=["GET","POST"])
 def search(name):
     if request.method=="POST":
-        print(request.form)
         search_txt=request.form.get("search_txt")
-        print(search_txt)
         by_professionalname=search_by_professionalname(search_txt)
-        print(by_professionalname)
-        by_customername=search_by_customername(search_txt)
         by_professionaladdress=search_by_professionaladdress(search_txt)
-        print(by_professionaladdress)
         by_professionalpincode=search_by_professionalpincode(search_txt)
-        print(by_professionalpincode)
-        if by_customername:
-            return render_template("admindashboard.html",customers=by_customername)
         if by_professionalname:
             return render_template("admindashboard.html",professionals=by_professionalname)
         if by_professionaladdress:
@@ -294,23 +243,18 @@ def search(name):
         if by_professionalpincode:
             return render_template("admindashboard.html",professionals=by_professionalpincode)
                
-    return render_template("admindashboard.html")
-
-def search_by_customername(search_txt):
-    customers = Customer.query.filter(Customer.fullname.like(f"%{search_txt}%")).all()
-    return customers
-
+    return render_template("admindashboard.html",name=name)
 
 def search_by_professionalname(search_txt):
-    professionals=Professional.query.filter(Professional.fullname.ilike(f"%{search_txt}%")).all()
+    professionals=Professional.query.filter(Professional.fullname.ilike("%{search_txt}%")).all
     return professionals
 
 def search_by_professionaladdress(search_txt):
-    professionals=Professional.query.filter(Professional.address.ilike(f"%{search_txt}%")).all()
+    professionals=Professional.query.filter(Professional.address.ilike("%{search_txt}%")).all
     return professionals
 
 def search_by_professionalpincode(search_txt):
-    professionals=Professional.query.filter(Professional.pincode.ilike(f"%{search_txt}%")).all()
+    professionals=Professional.query.filter(Professional.pincode.ilike("%{search_txt}%")).all
     return professionals
 
 
@@ -341,30 +285,14 @@ def subservices(subservice_id):
 @app.route("/booking/<int:subservice_id>",methods=["GET"])
 def bookin(subservice_id):
     print(subservice_id)
-    #status='Reqested'
-    #date=GETCURRENTDATE    
-    new_subservice=Servicereq(Service_id=subservice_id,Customer_id=session.get('userid'))
+    
+    new_subservice=Servicereq(Service_id=subservice_id,baseprice=ssprice)
     db.session.add(new_subservice)
     db.session.commit()
 
-    return redirect(url_for("customer_dashboard",name="Admin", msg="Subservice Added Successfully"))
+    return redirect(url_for("admin_dashboard",name="Admin", msg="Subservice Added Successfully"))
 
 
-#Define professional route to get "requested" service
-#app.route("/professional",methods=["GET"])
-#get all services from serviceRe table
-
-#Define new route for accept/reject
-#app.route("/professional/service/id",methods=["GET"])  
-#pass type as query parameter in URL
-#update DB entry ith status
-
-#Customer servie histrory
-#app.route("/customer/servies",methods=["GET"])
-#pass type as close while clicking on "close it"
-
-#Define route to get closed services
-#app.route("/professional/service/closed",methods=["GET"])
 
 
 

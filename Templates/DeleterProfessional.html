@@ -1,0 +1,37 @@
+{%extends "admin_layout.html"%}
+{%block content%}
+                <div class = "center"></div>
+                <form action="#" method="POST">
+                <form action="{{ url_for('delete_professional', id=service.id) }}" method="POST">
+                <div class="input_form">
+
+                    
+                    <div class="mb-3">
+                        <label for="fullname" class="form-label">Full Name</label>
+                        <input type="text" class="form-control"  name="fullname" id="fullname" placeholder="Full Name">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="contact_number" class="form-label">Contact Number</label>
+                        <input type="numbers" class="form-control" name="contact_number" id="contact_number" placeholder="1234567890">
+                    </div>
+                
+                    <div class="mb-3">
+                        <label for="service_name" class="form-label">Service Expertise</label>
+                        <input type="text" class="form-control" name="service_name" id="service_name" placeholder="Cleaning">
+                    </div>                   
+                    
+                    <div class="mb-3">
+                        <label for="experience" class="form-label">Years of Experience</label>
+                        <input type="text" class="form-control" name="experience" id="experience" placeholder="00">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="professional_summary" class="form-label">Professional_summary</label>
+                        <input type="string" class="form-control" name="professional_summary" id="professional_summary" placeholder="Explain CV in brief">
+                    </div>                    
+                </div>
+                </form>
+                </form>
+                </div>
+{%endblock%}
